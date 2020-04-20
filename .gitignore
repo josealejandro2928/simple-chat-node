@@ -1,0 +1,16 @@
+node_modules
+/node_modules/*
+
+public/images
+/public/images/*
+/public/videos/*
+/public/pdfs/*
+
+data/images
+/data/images/*
+/data/videos/*
+/data/invoices/*
+
+images
+/images/*
+
