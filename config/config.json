@@ -1,0 +1,14 @@
+{
+    "development": {
+        "database": {
+            "url": "mongodb://localhost:27017/",
+            "name": "rest-api-example"
+        }
+    },
+    "production": {
+        "database": {
+            "url": "mongodb://localhost:27017/",
+            "name": "rest-api-example"
+        }
+    }
+}
