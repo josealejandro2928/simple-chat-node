@@ -6,7 +6,6 @@ const mongoDb = require('./utils/database');
 const mongoose = require('mongoose');
 const hooks = require('./hooks/index');
 const app = express();
-const async = require('async');
 //////////////Set the app reference in the global node object /////////////////
 global.app = {}
 global.app.express = app;
