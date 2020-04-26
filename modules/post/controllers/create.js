@@ -8,17 +8,20 @@ module.exports = function (req, res) {
             errors: errors.array()
         })
     }
-    const title = req.body.title;
-    const message = req.body.message;
-    return res.status(201).json({
-        data: {
-            title: title,
-            message: message,
-            id: new Date().toISOString(),
-            creator: {
-                name: "Jose Alejandro"
-            },
-            createdAt: new Date()
+    let newPost = new global.models.Post({
+        ...req.body,
+        creator: {
+            name: "Jose ALejandro"
         }
-    });
+    })
+    newPost.save().then((post) => {
+        return res.status(201).json({
+            data: post
+        })
+    }).catch((error) => {
+        return res.status(500).json({
+            message: error.message,
+            errors: []
+        })
+    })
 }

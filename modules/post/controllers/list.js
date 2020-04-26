@@ -1,15 +1,14 @@
 module.exports = function (req, res) {
-    return res.status(200).json({
-        data: [{
-            _id: '1',
-            title: 'POst #1',
-            content: 'The loremn Insum',
-            imageUrl: null,
-            creator: {
-                name: 'Jose Alejandro'
-            },
-            createdAt: new Date()
-        }],
-        totalPosts: 1
+    global.models.Post.find().then((posts) => {
+        return res.status(200).json({
+            data: posts,
+            totalItems: posts.length
+        })
+    }).catch(err => {
+        return res.status(500).json({
+            message: err.message,
+            errors: []
+        })
+
     })
 }

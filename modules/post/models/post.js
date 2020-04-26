@@ -12,7 +12,6 @@ const PostShema = new Schema({
     },
     imageUrl: {
         type: String,
-        required: true
     },
     creator: {
         type: Object,
