@@ -1,12 +1,12 @@
 const validationResult = require('express-validator').validationResult;
 
-module.exports = function (req, res) {
+module.exports = function (req, res, next) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).json({
-            message: 'Validations fails, entered data is incorrect',
-            errors: errors.array()
-        })
+        const error = new Error('Validations fails, entered data is incorrect');
+        error.statusCode = 422;
+        error.errors = errors.array();
+        throw error;
     }
     let newPost = new global.models.Post({
         ...req.body,
@@ -19,9 +19,6 @@ module.exports = function (req, res) {
             data: post
         })
     }).catch((error) => {
-        return res.status(500).json({
-            message: error.message,
-            errors: []
-        })
+        return next(error);
     })
 }

@@ -5,6 +5,7 @@ var compression = require('compression');
 const mongoDb = require('./utils/database');
 const mongoose = require('mongoose');
 const hooks = require('./hooks/index');
+const path = require('path');
 const app = express();
 //////////////Set the app reference in the global node object /////////////////
 global.app = {}
@@ -23,25 +24,40 @@ app.use(bodyParser.urlencoded({
     extended: true,
 }));
 
+app.use('/images', express.static(path.join(__dirname, 'images')))
+
 ////////////RUNING HOOKS, REGISTRING ROUTES, GETTING MODELS, RUNINN TASKS////////////////
 Promise.resolve().then(() => {
-    return hooks.loadModules();
+    return hooks.loadModules().then(() => {
+        console.log("Modelos cargados:")
+        console.log(global.models)
+    });
 }).then(() => {
-    console.log("Modelos cargados:")
-    console.log(global.models)
-    return;
+    ///////////////ErrorHandler////////////////
+    errorHandler();
+    /////////////////////////////////////////////////
 }).then(() => {
-    /*
-    Put here some stuff that need to execute before Modules Registered and Models loaded
-    */
-    return;
-
+    console.log("Entre en esta tarea")
+}).then(() => {
+    console.log("Entre en esta otra tarea")
 }).catch(err => {
     console.log(err);
 })
 
 ///////////////////////////////////////////////////////////
-
+async function errorHandler() {
+    global.app.express.use((error, req, res, next) => {
+        console.log("*********************************************")
+        console.log("!!!!!!!!GLOBALLY ERROR HANDLER!!!!!!!!!", error);
+        const status = error.statusCode || 500;
+        const message = error.message;
+        const errors = error.errors || [];
+        return res.status(status).json({
+            message: message,
+            errors: errors
+        })
+    })
+}
 
 ///////////////START THE SERVER ON DATABASE CONNECTION/////////////////////////////
 mongoDb.connect().then(() => {
