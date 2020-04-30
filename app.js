@@ -6,6 +6,7 @@ const mongoDb = require('./utils/database');
 const mongoose = require('mongoose');
 const hooks = require('./hooks/index');
 const path = require('path');
+const processImageUpload = require('./middleware/processImageUploads');
 const app = express();
 //////////////Set the app reference in the global node object /////////////////
 global.app = {}
@@ -19,12 +20,19 @@ app.use(cors({
     maxAge: 604800000
 }));
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-    extended: true,
+app.use(bodyParser.json({
+    limit: '50mb',
+    extended: true
 }));
 
-app.use('/images', express.static(path.join(__dirname, 'images')))
+app.use(bodyParser.urlencoded({
+    extended: true,
+    limit: '50mb',
+}));
+
+app.use('/public', express.static(path.join(__dirname, 'public')))
+
+app.use(processImageUpload.processImageUpload);
 
 ////////////RUNING HOOKS, REGISTRING ROUTES, GETTING MODELS, RUNINN TASKS////////////////
 Promise.resolve().then(() => {

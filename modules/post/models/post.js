@@ -10,12 +10,14 @@ const PostShema = new Schema({
         type: String,
         required: true
     },
-    imageUrl: {
+    image: {
         type: String,
     },
     creator: {
-        type: Object,
-        required: true
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+        autoPopulate: true
     }
 }, {
     timestamps: true

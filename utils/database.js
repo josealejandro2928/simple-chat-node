@@ -3,6 +3,7 @@ const env = process.env.NODE_ENV || 'development';
 global.environment = env;
 console.log('******Running on environment: *********', env);
 const config = require(`${__dirname}/../config/config`)[env];
+global.config = config
 
 
 async function connect() {

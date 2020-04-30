@@ -10,15 +10,26 @@ module.exports = function (req, res, next) {
     }
     let newPost = new global.models.Post({
         ...req.body,
-        creator: {
-            name: "Jose ALejandro"
-        }
+        creator: req.loggedUser
     })
+    console.log("newPost", newPost)
     newPost.save().then((post) => {
+        req.post = post;
+        return global.models.User.findById({
+            _id: req.loggedUser._id
+        }).then(user => {
+            user.posts.push(post);
+            return user.save();
+        })
+    }).then(async () => {
+        let post = await global.models.Post.findById({
+            _id: req.post._id
+        }).populate('creator')
         return res.status(201).json({
             data: post
         })
     }).catch((error) => {
+        console.log("error", error)
         return next(error);
     })
 }

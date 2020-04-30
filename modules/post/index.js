@@ -6,6 +6,6 @@ module.exports = function loadModule() {
     ///////////REGISTRY ROUTES/////////////
     require('./routes/registry')()
     /////////////////////////////////////
-    console.log("Cargado el módulo:", "post")
+    console.log("Cargado el módulo:", "Post")
 
 }

@@ -1,11 +1,11 @@
 module.exports = function loadModule() {
     ///////////////LOAD MODELS///////////////
-    // require('./models/index')()
+    require('./models/index')()
     ////////////////////////////////////////
 
     ///////////REGISTRY ROUTES/////////////
-    // require('./routes/registry')()
+    require('./routes/registry')()
     /////////////////////////////////////
-    console.log("Cargado el módulo:", "user")
+    console.log("Cargado el módulo:", "User")
 
 }

@@ -3,12 +3,16 @@
         "database": {
             "url": "mongodb://localhost:27017/",
             "name": "rest-api-example"
-        }
+        },
+        "bcryptSalt": 12,
+        "jwtKey": "Jose Example aplication 20-956*---*+"
     },
     "production": {
         "database": {
             "url": "mongodb://localhost:27017/",
             "name": "rest-api-example"
-        }
+        },
+        "bcryptSalt": 12,
+        "jwtKey": "Jose Example aplication 20-956*---*+"
     }
 }

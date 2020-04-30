@@ -1,17 +1,20 @@
 const router = require("express").Router();
 const expressValidator = require("express-validator")
+const enssureAuth = require("../../../middleware/enssureAuth");
 
 module.exports = function registry() {
     const feedCollectionRoute = '/post';
-    router.get(feedCollectionRoute, require('../controllers/list'));
+    router.get(feedCollectionRoute, enssureAuth, require('../controllers/list'));
 
     router.post(feedCollectionRoute, expressValidator.body('title').trim().isLength({
         min: 5
     }), expressValidator.body('content').trim().isLength({
         min: 5
-    }), require('../controllers/create'));
+    }), enssureAuth, require('../controllers/create'));
 
-    router.get(feedCollectionRoute + '/:postId', findByIdMidd, require('../controllers/show'));
+    router.get(feedCollectionRoute + '/:postId', enssureAuth, findByIdMidd, require('../controllers/show'));
+    router.patch(feedCollectionRoute + '/:postId', enssureAuth, findByIdMidd, require('../controllers/update'));
+    router.delete(feedCollectionRoute + '/:postId', enssureAuth, findByIdMidd, require('../controllers/delete'));
 
     function findByIdMidd(req, res, next) {
         let postId = req.params.postId;
