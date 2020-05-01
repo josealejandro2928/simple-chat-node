@@ -2,7 +2,11 @@
     "development": {
         "database": {
             "url": "mongodb://localhost:27017/",
-            "name": "rest-api-example"
+            "name": "simple-chat"
+        },
+        "sms": {
+            "sid": "AC5d5d2b41bf03fb04ec643ad653a4eb66",
+            "token": "ee2cf4c609b72bbca45ca9fb77978354"
         },
         "bcryptSalt": 12,
         "jwtKey": "Jose Example aplication 20-956*---*+"
@@ -10,7 +14,11 @@
     "production": {
         "database": {
             "url": "mongodb://localhost:27017/",
-            "name": "rest-api-example"
+            "name": "simple-chat"
+        },
+        "sms": {
+            "sid": "AC5d5d2b41bf03fb04ec643ad653a4eb66",
+            "token": "ee2cf4c609b72bbca45ca9fb77978354"
         },
         "bcryptSalt": 12,
         "jwtKey": "Jose Example aplication 20-956*---*+"

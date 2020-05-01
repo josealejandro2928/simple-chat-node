@@ -7,6 +7,13 @@ const mongoose = require('mongoose');
 const hooks = require('./hooks/index');
 const path = require('path');
 const processImageUpload = require('./middleware/processImageUploads');
+
+const mailTransporter = require('./mail/index');
+global.mailer = {
+    transporter: mailTransporter,
+    mailAddress: 'pivotcuba@gmail.com'
+};
+
 const app = express();
 //////////////Set the app reference in the global node object /////////////////
 global.app = {}
@@ -14,6 +21,7 @@ global.app.express = app;
 global.mongoose = mongoose;
 global.mongoose.Promise = require('bluebird');
 global.models = {};
+global.sms = require('./utils/sms');
 ///////////////////////////////////////////////
 app.use(compression());
 app.use(cors({
@@ -70,9 +78,14 @@ async function errorHandler() {
 ///////////////START THE SERVER ON DATABASE CONNECTION/////////////////////////////
 mongoDb.connect().then(() => {
     console.log("Client Connected Succefully");
-    app.listen(8080);
+    let server = app.listen(8080);
+    require('./socket/socket').socketHandler(server);
     console.log(`App start at ${new Date().toTimeString()}`);
     console.log("The app start succefully");
+    let io = require('./socket/socket').getSocketIO();
+    io.emit('hello world', {
+        data: 'hello'
+    });
     // global.mongoose.set("debug", (collect, method, query, doc) => {
     //     console.log(`Collection: ${collect}, Method:${method}, Query: ${JSON.stringify(query)}`);
     // })

@@ -23,7 +23,7 @@ module.exports = function enssureAuth(req, res, next) {
     global.models.User.findOne({
         _id: decodedToken.userId,
         email: decodedToken.email
-    }, '-posts').then((user) => {
+    }, ).then((user) => {
         if (!user) {
             let error = Error('User not found');
             error.statusCode = 401;

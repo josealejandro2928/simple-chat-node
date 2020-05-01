@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 const UserShema = new Schema({
     email: {
         type: String,
+        required: true
     },
     name: {
         type: String,
@@ -11,14 +12,24 @@ const UserShema = new Schema({
     },
     phone: {
         type: String,
-        required: true
     },
     countryCode: {
         type: String,
-        required: true
+    },
+    isConnected: {
+        type: Boolean,
+        default: false
+
+    },
+    avatar: {
+        type: String
+    },
+    msg: {
+        type: String,
+        default: 'I am here, I\'m using Simple Chat'
     },
     status: {
-        type: Object,
+        type: String,
         required: true,
         default: 'disabled'
     },

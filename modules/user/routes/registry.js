@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const expressVal = require("express-validator")
+const enssureAuth = require("../../../middleware/enssureAuth");
 
 module.exports = function registry() {
     const authCollectionRoute = '/auth'
@@ -8,23 +9,23 @@ module.exports = function registry() {
         expressVal.body('name').trim().isLength({
             min: 2
         }).withMessage('Name is required and length grather than 2'),
-        expressVal.body('phone').isMobilePhone().withMessage('Enter a valid phone').custom((value) => {
-            return global.models.User.findOne({
-                phone: value
-            }).then((user) => {
-                if (user) {
-                    return Promise.reject('This mobile phone already exists');
-                }
-            })
-        }).normalizeEmail(),
-        expressVal.body('code').notEmpty(),
+        expressVal.body('email').isEmail().withMessage('Invalid email format').normalizeEmail(),
         require('../controllers/signup'));
 
-    router.post(authCollectionRoute + '/login', expressVal.body('email').trim().isLength({
-        min: 1
-    }).withMessage('The email is required'), expressVal.body('password').trim().isLength({
-        min: 1
-    }), require('../controllers/login'));
+    router.post(authCollectionRoute + '/confirm-account', expressVal.body('email').isEmail().withMessage('Invalid email format').normalizeEmail(),
+        expressVal.body('pin').trim().isLength({
+            min: 5,
+            max: 5
+        }).withMessage('The pin is invalid'), require('../controllers/confirm-account'));
+
+    router.post(authCollectionRoute + '/resend-pin',
+        expressVal.body('email').isEmail().withMessage('Invalid email format').normalizeEmail(),
+        require('../controllers/resend-pin'));
+
+    ////////////////////////////////////////////////////
+    const personCollectionRoute = '/person'
+
+    router.get(personCollectionRoute + '/contacts', enssureAuth, require('../controllers/get-contacts'))
     // ////////////////USING FOR APP/////////////////////
     global.app.express.use(router);
 }

@@ -1,7 +1,6 @@
 const valResult = require('express-validator').validationResult;
 
-module.exports = async function signUp(req, res, next) {
-
+module.exports = async function resendPin(req, res, next) {
     const errors = valResult(req);
     if (!errors.isEmpty()) {
         return res.status(422).json({
@@ -10,52 +9,37 @@ module.exports = async function signUp(req, res, next) {
         })
     }
 
+    let userId = req.body.userId;
     let email = req.body.email;
-    let name = req.body.name;
-
-    let searchUser = await global.models.User.findOne({
-        email: email
-    })
-    if (!searchUser) {
-        let newUser = new global.models.User({
-            name,
-            email,
+    try {
+        let user = await global.models.User.findOne({
+            email: email,
+            _id: userId
         })
 
-        return newUser.save().then(async user => {
-            let pin = Date.now() % 100000;
-            let expiredAt = Date.now() + 3600000;
-            return new global.models.Pin({
-                user: user,
-                pin: pin,
-                expiredAt
-            }).save().then(pin => {
-                sendEmail(user, pin)
-                return res.status(200).json({
-                    data: user
-                })
-            });
-        }).catch(error => {
+        if (!user) {
+            let error = new Error('There is not any user with this email');
+            error.statusCode = 400;
             return next(error);
-        });
-    } else {
+        }
+
         await global.models.Pin.deleteMany({
-            user: searchUser
+            user: user
         })
+
         let pin = Date.now() % 100000;
         let expiredAt = Date.now() + 3600000;
         new global.models.Pin({
-            user: searchUser,
+            user: user,
             pin: pin,
             expiredAt
         }).save().then(pin => {
-            sendEmail(searchUser, pin);
-            return res.status(200).json({
-                data: searchUser
-            })
+            sendEmail(user, pin)
+            return res.sendStatus(204);
         });
+    } catch (err) {
+        return next(err);
     }
-
 
 }
 
