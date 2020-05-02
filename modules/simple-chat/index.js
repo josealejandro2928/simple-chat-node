@@ -6,6 +6,6 @@ module.exports = function loadModule() {
     ///////////REGISTRY ROUTES/////////////
     require('./routes/registry')()
     /////////////////////////////////////
-    console.log("Cargado el módulo:", "Post")
+    console.log("Cargado el módulo:", "SimpleChat")
 
 }
