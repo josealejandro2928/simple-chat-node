@@ -20,6 +20,7 @@ module.exports = async function signUp(req, res, next) {
         let newUser = new global.models.User({
             name,
             email,
+            lastConnection: new Date()
         })
 
         return newUser.save().then(async user => {

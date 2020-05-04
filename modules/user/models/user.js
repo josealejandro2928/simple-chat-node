@@ -21,6 +21,9 @@ const UserShema = new Schema({
         default: false
 
     },
+    lastConnection: {
+        type: Date,
+    },
     avatar: {
         type: String
     },

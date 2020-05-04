@@ -17,7 +17,7 @@ module.exports = async function (req, res, next) {
         let chatA = await global.models.SimpleChat.findOne({
             userFrom: userFromId,
             userTo: userToId
-        })
+        });
 
         let chatB = await global.models.SimpleChat.findOne({
             userFrom: userToId,
@@ -50,23 +50,29 @@ module.exports = async function (req, res, next) {
                 chatTo: _newChatB
             })
 
-            return res.status(200).json({
-                messages: [],
-                simpleChat: _newChatA,
-                lastMessage: undefined
-            })
+            return global.models.SimpleChat.findById(_newChatA._id).populate('userTo')
+                .populate('userFrom')
+                .then((chat) => {
+                    return res.status(200).json({
+                        messages: [],
+                        simpleChat: chat,
+                    })
+                })
         }
         //////////////////////////////Si existe ya el Chat entre esos dos usuarios///////////////////////////
+        /////////////////Implementar lógica para devolver los mensajes //////////////////////////////////////
         let messages = await global.models.Message.find({
             simpleChat: chatA
         })
-        let lastMessage = messages[messages.length - 1];
-        return res.status(200).json({
-            messages: messages,
-            simpleChat: chatA,
-            lastMessage: lastMessage
-        })
-
+        ///////////////////////////////////////////////////////////////////////////////////////////////////
+        return global.models.SimpleChat.findById(chatA._id).populate('userTo')
+            .populate('userFrom')
+            .then((chat) => {
+                return res.status(200).json({
+                    messages: messages,
+                    simpleChat: chat,
+                })
+            })
     } catch (err) {
         return next(err);
     }

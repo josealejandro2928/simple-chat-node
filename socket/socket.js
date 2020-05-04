@@ -19,14 +19,13 @@ module.exports = {
                 let userId = getUser(token);
                 socket.username = userId;
                 Clients[userId] = socket;
-                let user = await global.models.User.findOneAndUpdate({
+                await global.models.User.findOneAndUpdate({
                     _id: userId
                 }, {
                     isConnected: true
                 });
-
+                let user = await global.models.User.findById(userId);
                 this.showClientsConnected();
-
                 socketIO.emit('users-changed', {
                     user: user,
                     event: 'joined'
@@ -37,12 +36,13 @@ module.exports = {
                 console.log("Client disconnect")
                 for (let key in Clients) {
                     if (Clients[key].id == socket.id) {
-                        let user = await global.models.User.findOneAndUpdate({
+                        await global.models.User.findOneAndUpdate({
                             _id: key
                         }, {
-                            isConnected: false
+                            isConnected: false,
+                            lastConnection: new Date()
                         });
-
+                        let user = await global.models.User.findById(key);
                         socketIO.emit('users-changed', {
                             user: user,
                             event: 'left'
@@ -52,6 +52,7 @@ module.exports = {
                 }
 
             });
+
         })
     },
     getSocketIO() {
