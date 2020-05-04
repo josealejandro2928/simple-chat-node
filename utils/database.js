@@ -11,7 +11,8 @@ async function connect() {
     console.log("connect -> url", url)
     return mongoose.connect(url, {
         useUnifiedTopology: true,
-        useNewUrlParser: true
+        useNewUrlParser: true,
+        useFindAndModify: false
     }).then(response => {
         return response;
     })

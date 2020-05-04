@@ -14,41 +14,56 @@ module.exports = async function (req, res, next) {
     console.log("Entre Aqui")
 
     try {
-        let simpleChat = await global.models.SimpleChat.findOne({
-            users: {
-                $all: [userFromId, userToId]
-            }
+        let chatA = await global.models.SimpleChat.findOne({
+            userFrom: userFromId,
+            userTo: userToId
         })
 
-        if (!simpleChat) {
-            let newSimpleChat = new global.models.SimpleChat({
-                users: [userFromId, userToId],
+        let chatB = await global.models.SimpleChat.findOne({
+            userFrom: userToId,
+            userTo: userFromId
+        })
+
+        if (!chatA || !chatB) {
+            let newSimpleChatA = new global.models.SimpleChat({
+                userFrom: userFromId,
+                userTo: userToId,
                 messages: [],
-                lastMessages: [],
             })
-            let chat = await newSimpleChat.save();
+            let newSimpleChatB = new global.models.SimpleChat({
+                userFrom: userToId,
+                userTo: userFromId,
+                messages: [],
+            })
+            let _newChatB = await newSimpleChatB.save();
+            let _newChatA = await newSimpleChatA.save();
+
+            await global.models.SimpleChat.findOneAndUpdate({
+                _id: _newChatB
+            }, {
+                chatTo: _newChatA
+            })
+
+            await global.models.SimpleChat.findOneAndUpdate({
+                _id: _newChatA
+            }, {
+                chatTo: _newChatB
+            })
+
             return res.status(200).json({
                 messages: [],
-                simpleChat: chat,
+                simpleChat: _newChatA,
                 lastMessage: undefined
             })
         }
         //////////////////////////////Si existe ya el Chat entre esos dos usuarios///////////////////////////
         let messages = await global.models.Message.find({
-            simpleChat: simpleChat
+            simpleChat: chatA
         })
-
-        messages = messages.map(item => {
-            let messageX = item.toObject();
-            messageX.action = (item.userFrom.toString() == userFromId.toString()) ? 'send' : 'received';
-            return messageX;
-        })
-
         let lastMessage = messages[messages.length - 1];
-
         return res.status(200).json({
             messages: messages,
-            simpleChat: simpleChat,
+            simpleChat: chatA,
             lastMessage: lastMessage
         })
 

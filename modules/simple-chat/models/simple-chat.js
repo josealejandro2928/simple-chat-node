@@ -2,21 +2,29 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const SimpleChatShema = new Schema({
-    users: [{
+    userTo: {
         type: Schema.Types.ObjectId,
         ref: 'User',
         require: true
-    }],
+    },
+    userFrom: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        require: true
+    },
+    chatTo: {
+        type: Schema.Types.ObjectId,
+        ref: 'SimpleChat',
+    },
     messages: [{
         type: Schema.Types.ObjectId,
         ref: 'Message',
         default: []
     }],
-    lastMessages: [{
+    lastMessage: {
         type: Schema.Types.ObjectId,
         ref: 'Message',
-        require: true
-    }]
+    }
 }, {
     timestamps: true
 })

@@ -7,17 +7,24 @@ const MessageSchema = new Schema({
         ref: 'SimpleChat',
         required: true
     },
-    userFrom: {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
     message: {
         type: String
+    },
+    image: {
+        type: String
+    },
+    type: {
+        type: String,
+        enum: ['simple', 'response'],
+        default: 'simple'
     },
     date: {
         type: Date,
         required: true
+    },
+    action: {
+        type: String,
+        enum: ['send', 'received']
     },
     status: {
         type: String,
@@ -29,7 +36,6 @@ const MessageSchema = new Schema({
         ref: 'User',
         required: true
     }
-
 }, {
     timestamps: true
 })

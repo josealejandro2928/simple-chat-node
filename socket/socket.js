@@ -10,10 +10,12 @@ module.exports = {
 
         socketIO.on('connection', socket => {
             console.log("Client Connected")
-            // Clients[userId] = socket;
+
+            socketIO.emit('get-token', {
+                action: "Socket connected"
+            });
 
             socket.on('set-token', async (token) => {
-                console.log("socketHandler -> token", token)
                 let userId = getUser(token);
                 socket.username = userId;
                 Clients[userId] = socket;
@@ -22,6 +24,8 @@ module.exports = {
                 }, {
                     isConnected: true
                 });
+
+                this.showClientsConnected();
 
                 socketIO.emit('users-changed', {
                     user: user,
@@ -62,6 +66,12 @@ module.exports = {
     },
     getConnectedClients() {
         return Object.keys(Clients);
+    },
+    showClientsConnected() {
+        console.log("Client: ")
+        Object.keys(Clients).map(key => {
+            console.log(`UserId: ${key} - socket: ${Clients[key].id}`)
+        })
     },
     getUser: getUser,
 }
