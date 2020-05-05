@@ -52,6 +52,38 @@ module.exports = {
                 }
 
             });
+            ///////////////UTILES FOR CHAT//////////////////////////////////
+
+            //////////////1-MARCAR MENSAJE COMO LEIDO/////////////////////
+            socket.on('mark-message-as-read', async function (data) {
+                let messageId = data.messageId;
+                let message = await global.models.Message.findById(messageId);
+                if (message.action != 'received') {
+                    throw new Error('THis action only works for messages received')
+                }
+                let messageFrom = await global.models.Message.findById(message.messageFromId);
+                messageFrom.status = 'read';
+                let newMessageFrom = await messageFrom.save();
+                let soketClient = getClient(newMessageFrom.creator);
+                if (soketClient) {
+                    soketClient.emit("message-read", {
+                        message: newMessageFrom
+                    });
+                }
+
+            })
+            //////////////2-USUARIO ESCRIBIENDO/////////////////////////
+            socket.on('user-typing', async function (data) {
+                let chatId = data.chatId;
+                if (!chatId) {
+                    throw new Error('Invalid operation you must provide a chat')
+                }
+                let chat = await global.models.SimpleChat.findById(chatId);
+                let soketClient = getClient(chat.userTo);
+                if (soketClient) {
+                    soketClient.emit('user-typing', {});
+                }
+            })
 
         })
     },
@@ -62,22 +94,13 @@ module.exports = {
             return socketIO
         }
     },
-    getClient(userId) {
-        return Clients[userId];
-    },
-    getConnectedClients() {
-        return Object.keys(Clients);
-    },
-    showClientsConnected() {
-        console.log("Client: ")
-        Object.keys(Clients).map(key => {
-            console.log(`UserId: ${key} - socket: ${Clients[key].id}`)
-        })
-    },
+    getClient: getClient,
+    getConnectedClients: getConnectedClients,
     getUser: getUser,
+    showClientsConnected: showClientsConnected
 }
 
-////////////////UTILS FUNCTIONS////////////////////////
+////////////////UTILS FUNCTIONS FOR SOCKET MODULE////////////////////////
 function getUser(Authorization) {
     if (!Authorization) {
         const error = new Error('Invalid Authentication');
@@ -99,4 +122,19 @@ function getUser(Authorization) {
         throw error;
     }
     return decodedToken.userId
+}
+
+function getClient(userId) {
+    return Clients[userId];
+}
+
+function getConnectedClients() {
+    return Object.keys(Clients);
+}
+
+function showClientsConnected() {
+    console.log("Client: ")
+    Object.keys(Clients).map(key => {
+        console.log(`UserId: ${key} - socket: ${Clients[key].id}`)
+    })
 }

@@ -61,6 +61,7 @@ module.exports = async function (req, res, next) {
         }
         //////////////////////////////Si existe ya el Chat entre esos dos usuarios///////////////////////////
         /////////////////Implementar lógica para devolver los mensajes //////////////////////////////////////
+        /////////////////EL chatA es el requerido por el usuario logeado que hace la peticion///////////////
         let messages = await global.models.Message.find({
             simpleChat: chatA
         })

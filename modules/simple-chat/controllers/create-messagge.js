@@ -37,10 +37,10 @@ module.exports = async function (req, res, next) {
             status: 'unread',
             creator: userFromId,
             message: message,
-            action: 'received'
+            action: 'received',
         })
 
-        messageXA.save().then((messageA) => {
+        messageXA.save().then(async (messageA) => {
             let socket = soketIo.getClient(chatA.userFrom);
             if (socket) {
                 socket.emit('send-message', {
@@ -48,8 +48,14 @@ module.exports = async function (req, res, next) {
                     action: 'Mensaje created'
                 })
             }
+            await global.models.SimpleChat.updateOne({
+                _id: chatA._id
+            }, {
+                lastMessage: messageA
+            });
+            req.messageA = messageA;
             return messageXB.save();
-        }).then((messageB) => {
+        }).then(async (messageB) => {
             let socket = soketIo.getClient(chatA.userTo);
             if (socket) {
                 socket.emit('send-message', {
@@ -57,6 +63,8 @@ module.exports = async function (req, res, next) {
                     action: 'Mensaje created'
                 })
             }
+            messageB.messageFromId = req.messageA._id;
+            await messageB.save();
             return res.sendStatus(204);
         })
 
