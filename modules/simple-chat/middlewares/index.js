@@ -12,6 +12,7 @@ module.exports = {
                 error.sendStatus = 404;
                 return next(error);
             }
+            req.chat = data;
             return next();
         }).catch(err => {
             return next(err);

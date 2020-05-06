@@ -62,9 +62,46 @@ module.exports = async function (req, res, next) {
         //////////////////////////////Si existe ya el Chat entre esos dos usuarios///////////////////////////
         /////////////////Implementar lógica para devolver los mensajes //////////////////////////////////////
         /////////////////EL chatA es el requerido por el usuario logeado que hace la peticion///////////////
-        let messages = await global.models.Message.find({
-            simpleChat: chatA
-        })
+        let lastMessageSendOrRead = chatA.lastMessageSendOrRead;
+        let messages = [];
+        let notReadMessages = 0;
+        if (lastMessageSendOrRead) {
+            let lastMessages = await global.models.Message.find({
+                simpleChat: chatA,
+                _id: {
+                    $lte: lastMessageSendOrRead
+                }
+            }, ).limit(10).sort({
+                _id: -1
+            });
+
+            lastMessages = lastMessages.sort(compareId);
+            messages = lastMessages.concat(messages);
+            let nextMessages = await global.models.Message.find({
+                simpleChat: chatA,
+                _id: {
+                    $gt: lastMessageSendOrRead,
+                },
+            })
+            messages = lastMessages.concat(nextMessages);
+
+            notReadMessages = await global.models.Message.countDocuments({
+                simpleChat: chatA,
+                _id: {
+                    $gt: lastMessageSendOrRead,
+                },
+                status: 'unread',
+                action: "received"
+            })
+        } else {
+            messages = await global.models.Message.find({
+                simpleChat: chatA,
+            })
+            notReadMessages = messages.length;
+        }
+
+
+        // let messages =
         ///////////////////////////////////////////////////////////////////////////////////////////////////
         return global.models.SimpleChat.findById(chatA._id).populate('userTo')
             .populate('userFrom')
@@ -72,11 +109,25 @@ module.exports = async function (req, res, next) {
                 return res.status(200).json({
                     messages: messages,
                     simpleChat: chat,
+                    notReadMessages: notReadMessages
                 })
+            }).catch((err) => {
+                return next(err);
             })
     } catch (err) {
         return next(err);
     }
 
 
+}
+
+function compareId(a, b) {
+    if (a._id.toString() > b._id.toString()) {
+        return 1;
+    }
+    if (a._id.toString() < b._id.toString()) {
+        return -1;
+    } else {
+        return 0;
+    }
 }

@@ -56,20 +56,30 @@ module.exports = {
 
             //////////////1-MARCAR MENSAJE COMO LEIDO/////////////////////
             socket.on('mark-message-as-read', async function (data) {
-                let messageId = data.messageId;
-                let message = await global.models.Message.findById(messageId);
-                if (message.action != 'received') {
-                    throw new Error('THis action only works for messages received')
+                try {
+                    let messageId = data.messageId;
+                    let message = await global.models.Message.findById(messageId);
+                    if (message.action != 'received') {
+                        throw new Error('THis action only works for messages received')
+                    }
+                    let messageFrom = await global.models.Message.findById(message.messageFromId);
+                    messageFrom.status = 'read';
+                    let newMessageFrom = await messageFrom.save();
+
+                    message.status = 'read';
+                    await message.save();
+
+                    let soketClient = getClient(newMessageFrom.creator);
+                    if (soketClient) {
+                        soketClient.emit("message-read", {
+                            message: newMessageFrom
+                        });
+                    }
+
+                } catch (err) {
+                    console.log("socketHandler -> err", err)
                 }
-                let messageFrom = await global.models.Message.findById(message.messageFromId);
-                messageFrom.status = 'read';
-                let newMessageFrom = await messageFrom.save();
-                let soketClient = getClient(newMessageFrom.creator);
-                if (soketClient) {
-                    soketClient.emit("message-read", {
-                        message: newMessageFrom
-                    });
-                }
+
 
             })
             //////////////2-USUARIO ESCRIBIENDO/////////////////////////
@@ -83,6 +93,25 @@ module.exports = {
                 if (soketClient) {
                     soketClient.emit('user-typing', {});
                 }
+            })
+
+            //////////////////3-ULTIMO MENSAJE LEIDO O ENVIADO POR EL USUARIO//////////////////
+            socket.on('set-message-as-last-read-or-send', async function (data) {
+                let messageId = data.messageId;
+                console.log("Entrando mucho aqui");
+                try {
+                    let message = await global.models.Message.findById(messageId).populate('simpleChat');
+                    let chat = message.simpleChat;
+                    if (chat.lastMessageSendOrRead.toString() < message._id.toString()) {
+                        chat.lastMessageSendOrRead = message;
+                        await chat.save();
+                    }
+                } catch (error) {
+                    console.log("socketHandler -> error", error)
+
+                }
+
+
             })
 
         })

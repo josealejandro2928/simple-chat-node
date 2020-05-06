@@ -4,10 +4,13 @@ const chatMidd = require("../middlewares/index");
 
 module.exports = function registry() {
     const chatCollectionRoute = '/chat';
-    router.get(chatCollectionRoute + '/init', enssureAuth, require('../controllers/initChat'));
+    router.get(chatCollectionRoute + '/init', enssureAuth, require('../controllers/init-chat'));
 
     router.post(chatCollectionRoute + '/:chatId', enssureAuth, chatMidd.existChatId,
-        require("../controllers/create-messagge"));
+        require("../controllers/create-message"));
+
+    router.get(chatCollectionRoute + '/:chatId/messages', enssureAuth, chatMidd.existChatId,
+        require("../controllers/list-messages"));
 
 
 

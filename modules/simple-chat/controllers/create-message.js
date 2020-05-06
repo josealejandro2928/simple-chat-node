@@ -48,11 +48,9 @@ module.exports = async function (req, res, next) {
                     action: 'Mensaje created'
                 })
             }
-            await global.models.SimpleChat.updateOne({
-                _id: chatA._id
-            }, {
-                lastMessage: messageA
-            });
+            chatA.lastMessage = messageA._id;
+            chatA.lastMessageSendOrRead = messageA._id;
+            await chatA.save();
             req.messageA = messageA;
             return messageXB.save();
         }).then(async (messageB) => {
@@ -64,8 +62,11 @@ module.exports = async function (req, res, next) {
                 })
             }
             messageB.messageFromId = req.messageA._id;
-            await messageB.save();
+            chatB.lastMessage = await messageB.save();
+            await chatB.save()
             return res.sendStatus(204);
+        }).catch((err) => {
+            return next(err);
         })
 
     } catch (err) {

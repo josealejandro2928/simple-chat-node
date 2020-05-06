@@ -21,6 +21,10 @@ const SimpleChatShema = new Schema({
         ref: 'Message',
         default: []
     }],
+    lastMessageSendOrRead: {
+        type: Schema.Types.ObjectId,
+        ref: 'Message',
+    },
     lastMessage: {
         type: Schema.Types.ObjectId,
         ref: 'Message',
