@@ -77,7 +77,7 @@ module.exports = {
                     }
 
                 } catch (err) {
-                    console.log("socketHandler -> err", err)
+                    console.log("Error en: mark-message-as-read", err)
                 }
 
 
@@ -102,12 +102,16 @@ module.exports = {
                 try {
                     let message = await global.models.Message.findById(messageId).populate('simpleChat');
                     let chat = message.simpleChat;
-                    if (chat.lastMessageSendOrRead.toString() < message._id.toString()) {
+                    if (chat.lastMessageSendOrRead && chat.lastMessageSendOrRead.toString() < message._id.toString()) {
                         chat.lastMessageSendOrRead = message;
-                        await chat.save();
+                        return await chat.save();
+                    }
+                    if (!chat.lastMessageSendOrRead) {
+                        chat.lastMessageSendOrRead = message;
+                        return await chat.save();
                     }
                 } catch (error) {
-                    console.log("socketHandler -> error", error)
+                    console.log("Error en: set-message-as-last-read-or-send", error)
 
                 }
 
