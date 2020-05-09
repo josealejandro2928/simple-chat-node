@@ -5,8 +5,6 @@ module.exports = async function listMessages(req, res, next) {
         let action = req.query.action;
         let limit = +req.query.limit || 10;
         let messages = [];
-        console.log("listMessages -> req.query", req.query)
-
         if (action == 'backward') {
             /*
             Backward pagination

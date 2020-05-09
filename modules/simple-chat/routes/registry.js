@@ -16,6 +16,9 @@ module.exports = function registry() {
     router.get(chatCollectionRoute + '/:chatId/messages', enssureAuth, chatMidd.existChatId,
         require("../controllers/list-messages"));
 
+    router.post(chatCollectionRoute + '/:chatId/remove-messages', enssureAuth, chatMidd.existChatId,
+        require("../controllers/delete-messages"));
+
 
 
     ////////////////USING FOR APP/////////////////////

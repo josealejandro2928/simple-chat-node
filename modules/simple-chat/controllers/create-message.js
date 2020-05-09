@@ -45,12 +45,16 @@ module.exports = async function (req, res, next) {
             if (socket) {
                 socket.emit('send-message', {
                     data: messageA,
-                    action: 'Mensaje created'
+                    action: 'Mensaje created',
+                    chatId: chatA._id
                 })
             }
             chatA.lastMessage = messageA._id;
             chatA.lastMessageSendOrRead = messageA._id;
-            await chatA.save();
+            let chatAUpdated = await chatA.save();
+            socket.emit("chat-update", {
+                chat: chatAUpdated
+            });
             req.messageA = messageA;
             return messageXB.save();
         }).then(async (messageB) => {
@@ -58,14 +62,23 @@ module.exports = async function (req, res, next) {
             if (socket) {
                 socket.emit('send-message', {
                     data: messageB,
-                    action: 'Mensaje created'
+                    action: 'Mensaje created',
+                    chatId: chatB._id
                 })
             }
             messageB.messageFromId = req.messageA._id;
-            chatB.lastMessage = await messageB.save();
-            await chatB.save()
+            messageB = await messageB.save();
+            chatB.lastMessage = messageB._id
+            let chatBUpdated = await chatB.save()
+            if (socket) {
+                socket.emit("chat-update", {
+                    chat: chatBUpdated
+                });
+            }
+
             return res.sendStatus(204);
         }).catch((err) => {
+            console.log("Error en el crear de message", err)
             return next(err);
         })
 

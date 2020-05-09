@@ -30,6 +30,9 @@ module.exports = {
                     user: user,
                     event: 'joined'
                 });
+                socketIO.emit("chats-update", {
+                    msg: 'Chats update'
+                });
             });
 
             socket.on('disconnect', async function () {
@@ -50,6 +53,9 @@ module.exports = {
                         delete Clients[key];
                     }
                 }
+                socketIO.emit("chats-update", {
+                    msg: 'Chats update'
+                });
 
             });
             ///////////////UTILES FOR CHAT//////////////////////////////////
@@ -72,7 +78,8 @@ module.exports = {
                     let soketClient = getClient(newMessageFrom.creator);
                     if (soketClient) {
                         soketClient.emit("message-read", {
-                            message: newMessageFrom
+                            message: newMessageFrom,
+                            chatId: newMessageFrom.simpleChat
                         });
                     }
 
@@ -88,11 +95,23 @@ module.exports = {
                 if (!chatId) {
                     throw new Error('Invalid operation you must provide a chat')
                 }
-                let chat = await global.models.SimpleChat.findById(chatId);
-                let soketClient = getClient(chat.userTo);
-                if (soketClient) {
-                    soketClient.emit('user-typing', {});
+                try {
+                    let chat = await global.models.SimpleChat.findById(chatId).populate('userFrom');
+                    let chatTo = await global.models.SimpleChat.findById(chat.chatTo);
+                    let soketClient = getClient(chat.userTo);
+                    if (soketClient) {
+                        soketClient.emit('user-typing', {
+                            chat: chatTo,
+                            msg: `${chat.userFrom.name} is typing`,
+                            chatId: chatTo._id
+                        });
+                    }
+
+                } catch (err) {
+                    console.log("Error en: user-typing", err)
+
                 }
+
             })
 
             //////////////////3-ULTIMO MENSAJE LEIDO O ENVIADO POR EL USUARIO//////////////////
@@ -103,11 +122,11 @@ module.exports = {
                     let message = await global.models.Message.findById(messageId).populate('simpleChat');
                     let chat = message.simpleChat;
                     if (chat.lastMessageSendOrRead && chat.lastMessageSendOrRead.toString() < message._id.toString()) {
-                        chat.lastMessageSendOrRead = message;
+                        chat.lastMessageSendOrRead = message._id;
                         return await chat.save();
                     }
                     if (!chat.lastMessageSendOrRead) {
-                        chat.lastMessageSendOrRead = message;
+                        chat.lastMessageSendOrRead = message._id;
                         return await chat.save();
                     }
                 } catch (error) {
