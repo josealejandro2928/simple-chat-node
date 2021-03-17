@@ -53,7 +53,23 @@ Promise.resolve().then(() => {
     errorHandler();
     /////////////////////////////////////////////////
 }).then(() => {
-    console.log("Entre en esta tarea")
+    app.route('/test').get(async (req, res, next) => {
+        console.time("t")
+        let data = await global.models.Message.find({});
+        return res.status(200).json({
+            data: data,
+            total: data.length
+        });
+
+        // global.models.Message.find({}).then((data) => {
+        //     console.timeEnd("t")
+        //     return res.status(200).json(data);
+        // }).catch(err => {
+        //     return next(err);
+        // })
+
+    })
+
 }).then(() => {
     console.log("Entre en esta otra tarea")
 }).catch(err => {
