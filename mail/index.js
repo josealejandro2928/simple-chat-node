@@ -1,20 +1,20 @@
-const nodemailer = require("nodemailer");
+const nodemailer = require('nodemailer');
 
 const config = {
-    "enabled": true,
-    "sendMail": false,
-    "activeService": "gmail",
-    "from": "jalejandro2928@gmail.com<jalejandro2928@gmail.com>",
-    "services": {
-        "gmail": {
-            "service": "gmail",
-            "auth": {
-                "user": "pivotcuba@gmail.com",
-                "pass": "pivotcuba1234"
-            }
-        }
-    }
-}
+  enabled: true,
+  sendMail: false,
+  activeService: 'gmail',
+  from: 'jalejandro2928@gmail.com<jalejandro2928@gmail.com>',
+  services: {
+    gmail: {
+      service: 'gmail',
+      auth: {
+        user: 'jalejandro2928@gmail.com',
+        pass: 'lolo2928',
+      },
+    },
+  },
+};
 
 var activeService = config.activeService;
 var options = config.services[activeService];
