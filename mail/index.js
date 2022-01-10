@@ -10,7 +10,7 @@ const config = {
       service: 'gmail',
       auth: {
         user: 'jalejandro2928@gmail.com',
-        pass: 'lolo2928',
+        pass: '123456.Aa*',
       },
     },
   },

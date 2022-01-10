@@ -1,3 +1,4 @@
+const PORT = 8080;
 const express = require('express');
 const bodyParser = require('body-parser');
 var cors = require('cors');
@@ -11,7 +12,7 @@ const processImageUpload = require('./middleware/processImageUploads');
 const mailTransporter = require('./mail/index');
 global.mailer = {
   transporter: mailTransporter,
-  mailAddress: 'pivotcuba@gmail.com',
+  mailAddress: 'jalejandro2928@gmail.com',
 };
 
 const app = express();
@@ -49,6 +50,12 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use(processImageUpload.processImageUpload);
 
 ////////////RUNING HOOKS, REGISTRING ROUTES, GETTING MODELS, RUNINN TASKS////////////////
+app.get('/version', (req, res) => {
+  return res.status(200).json({
+    time: new Date(),
+    message: 'Working',
+  });
+});
 Promise.resolve()
   .then(() => {
     return hooks.loadModules().then(() => {
@@ -64,19 +71,11 @@ Promise.resolve()
   .then(() => {
     // eslint-disable-next-line no-unused-vars
     app.route('/test').get(async (req, res, next) => {
-      console.time('t');
       let data = await global.models.Message.find({});
       return res.status(200).json({
         data: data,
         total: data.length,
       });
-
-      // global.models.Message.find({}).then((data) => {
-      //     console.timeEnd("t")
-      //     return res.status(200).json(data);
-      // }).catch(err => {
-      //     return next(err);
-      // })
     });
   })
   .then(() => {
@@ -106,7 +105,7 @@ mongoDb
   .connect()
   .then(() => {
     console.log('Client Connected Succefully');
-    let server = app.listen(8080);
+    let server = app.listen(PORT || 8080);
     require('./socket/socket').socketHandler(server);
     console.log(`App start at ${new Date().toTimeString()}`);
     console.log('The app start succefully');
