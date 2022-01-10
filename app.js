@@ -105,7 +105,7 @@ mongoDb
   .connect()
   .then(() => {
     console.log('Client Connected Succefully');
-    let server = app.listen(PORT || 8080);
+    let server = app.listen(process.env.PORT || PORT);
     require('./socket/socket').socketHandler(server);
     console.log(`App start at ${new Date().toTimeString()}`);
     console.log('The app start succefully');
