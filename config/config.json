@@ -9,7 +9,8 @@
       "token": "ee2cf4c609b72bbca45ca9fb77978354"
     },
     "bcryptSalt": 12,
-    "jwtKey": "Jose Example aplication 20-956*---*+"
+    "jwtKey": "Jose Example aplication 20-956*---*+",
+    "mailKey": "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"
   },
   "production": {
     "database": {
@@ -21,6 +22,7 @@
       "token": "ee2cf4c609b72bbca45ca9fb77978354"
     },
     "bcryptSalt": 12,
-    "jwtKey": "Jose Example aplication 20-956*---*+"
+    "jwtKey": "Jose Example aplication 20-956*---*+",
+    "mailKey": "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"
   }
 }

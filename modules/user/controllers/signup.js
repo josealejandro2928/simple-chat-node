@@ -1,4 +1,5 @@
 const valResult = require('express-validator').validationResult;
+const sendEmailSendGrid = require('../../../mail/index');
 
 module.exports = async function signUp(req, res, next) {
   const errors = valResult(req);
@@ -66,15 +67,25 @@ module.exports = async function signUp(req, res, next) {
 };
 
 function sendEmail(user, pin) {
-  global.mailer.transporter
-    .sendMail({
-      to: user.email,
-      from: global.mailer.emailAddress,
-      subject: 'Sign Up Succssefully',
-      html: `<h1 style="text-align:center;"> WELCOME ${user.name}</h1>
-               <p1 style="text-align:center;"> Hello welcom to Simple-Char, use this code to activate your account <strong>${pin.pin}</strong></p1>`,
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  sendEmailSendGrid(
+    user.email,
+    'Sign Up Succssefully',
+    'Sign Up Succssefully',
+    `<h1 style="text-align:center;"> WELCOME ${user.name}</h1>
+      <p1 style="text-align:center;"> Hello welcom to Simple-Char, use this code to activate your account <strong>${pin.pin}</strong></p1>`,
+  ).catch((err) => {
+    console.log(err);
+    console.log(err.response.body);
+  });
+  // global.mailer.transporter
+  //   .sendMail({
+  //     to: user.email,
+  //     from: global.mailer.emailAddress,
+  //     subject: 'Sign Up Succssefully',
+  //     html: `<h1 style="text-align:center;"> WELCOME ${user.name}</h1>
+  //              <p1 style="text-align:center;"> Hello welcom to Simple-Char, use this code to activate your account <strong>${pin.pin}</strong></p1>`,
+  //   })
+  //   .catch((err) => {
+  //     console.log(err);
+  //   });
 }

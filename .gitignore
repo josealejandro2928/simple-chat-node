@@ -14,3 +14,4 @@ data/images
 images
 /images/*
 
+sendgrid.env
