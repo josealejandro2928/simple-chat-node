@@ -13,7 +13,7 @@
   },
   "production": {
     "database": {
-      "url": "mongodb://localhost:27017/",
+      "url": "mongodb+srv://admin:123456.A@freecodecampdb.e7afu.mongodb.net/",
       "name": "simple-chat"
     },
     "sms": {

@@ -1,7 +1,7 @@
 {
-  "name": "simple_rest_api",
+  "name": "restapi-simple-chat.herokuapp.com",
   "version": "1.0.0",
-  "description": "simple_rest_api",
+  "description": "restapi-simple-chat.herokuapp.com",
   "main": "app.js",
   "scripts": {
     "lint": "eslint",
