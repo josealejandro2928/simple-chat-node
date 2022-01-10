@@ -9,11 +9,11 @@ const hooks = require('./hooks/index');
 const path = require('path');
 const processImageUpload = require('./middleware/processImageUploads');
 
-// const mailTransporter = require('./mail/index');
-// global.mailer = {
-//   transporter: mailTransporter,
-//   mailAddress: 'jalejandro2928@gmail.com',
-// };
+const mailTransporter = require('./mail/index');
+global.mailer = {
+  transporter: mailTransporter,
+  mailAddress: 'tienda@peoplegoto.com',
+};
 
 const app = express();
 //////////////Set the app reference in the global node object /////////////////
